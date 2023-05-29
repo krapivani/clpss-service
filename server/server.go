@@ -27,7 +27,7 @@ func CreateServer(conf config.ConfigInterface) *gin.Engine {
 	externalV1 := router.Group("/external/v1")
 	{
 		externalV1.GET("/GetInfo", handler.GetInfo)
-		externalV1.GET("/GetUsers", handler.GetUsers)
+		externalV1.GET("/GetUsers/:country", handler.GetUsers)
 	}
 
 	{

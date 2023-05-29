@@ -30,10 +30,26 @@ func GetInfo(c *gin.Context) {
 
 func GetUsers(c *gin.Context) {
 
-	params := &dynamodb.ScanInput{
-		TableName: aws.String("user_data"),
+	country := c.Param("country")
+
+	//if country != "USA" && country != "India" {
+	//	logrus.Error("Failed to get the users since Country is wrong: ", country)
+	//	c.JSON(http.StatusInternalServerError, "Invalid Request")
+	//}
+
+	params := &dynamodb.QueryInput{
+		TableName:              aws.String("user_data"),
+		KeyConditionExpression: aws.String("#country = :countryValue"),
+		ExpressionAttributeNames: map[string]*string{
+			"#country": aws.String("country"),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":countryValue": {
+				S: aws.String(country),
+			},
+		},
 	}
-	result, err := dynamoDB.Scan(params)
+	result, err := dynamoDB.Query(params)
 	if err != nil {
 		logrus.Error("Error fetching data ", err)
 		c.JSON(http.StatusInternalServerError, err)
